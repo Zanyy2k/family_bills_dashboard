@@ -76,26 +76,22 @@ elec_avg = edf["elec_kwh"].mean()
 
 elec_avg_cost = edf["current_charges"].mean()
 
-# Row 1: water + gas
-k1, k2 = st.columns(2)
+k1, k2, k3, k4, k5 = st.columns(5)
 k1.metric(
-    f"💧🔥 最新水费+天然气（{latest['month_cn']}）",
+    f"💧🔥 水气最新（{latest['month_cn']}）",
     f"${latest['total_current_charges']:.2f}",
     delta=f"vs 上月 ${latest['total_current_charges'] - prev['total_current_charges']:+.2f}",
     delta_color="inverse",
 )
-k2.metric("💧🔥 水费+天然气月均", f"${avg_total:.2f}", delta="含垃圾费和GST")
-
-# Row 2: electricity + U-Save
-k3, k4, k5 = st.columns(3)
+k2.metric("💧🔥 水气月均", f"${avg_total:.2f}", delta="含垃圾费和GST")
 k3.metric(
-    f"⚡ 最新电费（{elec_latest['month_cn']}）",
+    f"⚡ 电费最新（{elec_latest['month_cn']}）",
     f"${elec_latest['current_charges']:.2f}",
-    delta=f"实付 ${elec_latest['total_payable']:.2f}（含U-Save）",
+    delta=f"实付 ${elec_latest['total_payable']:.2f}（扣U-Save）",
     delta_color="off",
 )
-k4.metric("⚡ 电费月均", f"${elec_avg_cost:.2f}", delta="含GST，未扣U-Save")
-k5.metric("🎁 U-Save 补贴（水气）", f"${total_usave:.0f}", delta="政府发放，每季 $150")
+k4.metric("⚡ 电费月均", f"${elec_avg_cost:.2f}", delta="含GST")
+k5.metric("🎁 U-Save 补贴", f"${total_usave:.0f}", delta="水气账户，每季 $150")
 
 st.divider()
 
