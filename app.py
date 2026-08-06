@@ -83,14 +83,14 @@ k1.metric(
     delta=f"vs 上月 ${latest['total_current_charges'] - prev['total_current_charges']:+.2f}",
     delta_color="inverse",
 )
-k2.metric("💧🔥 水气月均", f"${avg_total:.2f}", delta="含垃圾费和GST")
+k2.metric("💧🔥 水气月均", f"${avg_total:.2f}", delta="15个月均值，含垃圾费和GST")
 k3.metric(
     f"⚡ 电费最新（{elec_latest['month_cn']}）",
     f"${elec_latest['current_charges']:.2f}",
     delta=f"实付 ${elec_latest['total_payable']:.2f}（扣U-Save）",
     delta_color="off",
 )
-k4.metric("⚡ 电费月均", f"${elec_avg_cost:.2f}", delta="含GST")
+k4.metric("⚡ 电费月均", f"${elec_avg_cost:.2f}", delta="17个月均值，含GST")
 k5.metric("🎁 U-Save 补贴", f"${total_usave:.0f}", delta="水气账户，每季 $150")
 
 st.divider()
