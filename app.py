@@ -63,7 +63,7 @@ edf = load_elec_data()
 
 # ── Header ──────────────────────────────────────────────────────────────
 st.title("🏠 家庭水电费账单看板")
-st.caption("新加坡 · SP Services Ltd（水费/燃气）+ Geneco YTL PowerSeraya（电费）")
+st.caption("新加坡家庭 · 水费 + 天然气（SP Services）· 电费（Geneco）")
 
 # ── KPI row ─────────────────────────────────────────────────────────────
 latest = df.iloc[-1]
@@ -74,22 +74,28 @@ total_usave = df["usave_deduction"].sum()
 elec_latest = edf.iloc[-1]
 elec_avg = edf["elec_kwh"].mean()
 
-k1, k2, k3, k4, k5 = st.columns(5)
+elec_avg_cost = edf["current_charges"].mean()
+
+# Row 1: water + gas
+k1, k2 = st.columns(2)
 k1.metric(
-    f"最新SP账单（{latest['month_cn']}）",
+    f"💧🔥 最新水费+天然气（{latest['month_cn']}）",
     f"${latest['total_current_charges']:.2f}",
     delta=f"vs 上月 ${latest['total_current_charges'] - prev['total_current_charges']:+.2f}",
     delta_color="inverse",
 )
-k2.metric("SP 月均账单", f"${avg_total:.2f}", delta="水费+燃气+垃圾")
-k3.metric("SP 历史最高月", f"${max_row['total_current_charges']:.2f}", delta=max_row["month_cn"])
-k4.metric(
-    f"最新电费（{elec_latest['month_cn']}）",
+k2.metric("💧🔥 水费+天然气月均", f"${avg_total:.2f}", delta="含垃圾费和GST")
+
+# Row 2: electricity + U-Save
+k3, k4, k5 = st.columns(3)
+k3.metric(
+    f"⚡ 最新电费（{elec_latest['month_cn']}）",
     f"${elec_latest['current_charges']:.2f}",
     delta=f"实付 ${elec_latest['total_payable']:.2f}（含U-Save）",
     delta_color="off",
 )
-k5.metric("U-Save 补贴（SP累计）", f"${total_usave:.0f}", delta="政府发放，每季 $150")
+k4.metric("⚡ 电费月均", f"${elec_avg_cost:.2f}", delta="含GST，未扣U-Save")
+k5.metric("🎁 U-Save 补贴（水气）", f"${total_usave:.0f}", delta="政府发放，每季 $150")
 
 st.divider()
 
@@ -284,7 +290,7 @@ with tab2:
 # ───────────────────────────── TAB 3: ELECTRICITY ───────────────────────
 with tab3:
     st.subheader("⚡ 每月用电量（度，1 度 = 1 千瓦时 = kWh）")
-    st.caption("电力零售商：Geneco（YTL PowerSeraya）· 账号：GC8148014T · 固定价格套餐")
+    st.caption("电力零售商：Geneco（YTL PowerSeraya）· 固定价格套餐")
 
     # Key metrics
     e1, e2, e3, e4 = st.columns(4)
@@ -520,7 +526,7 @@ with tab4:
 
 # ───────────────────────────── TAB 5: FULL TABLE ────────────────────────
 with tab5:
-    st.subheader("SP 账单完整明细（水费 + 燃气 + 垃圾，15个月）")
+    st.subheader("水费 + 天然气 + 垃圾 完整明细（15个月）")
 
     disp = df[[
         "month_cn", "period_start", "period_end",
@@ -530,7 +536,7 @@ with tab5:
     ]].copy()
     disp["period_start"] = disp["period_start"].dt.strftime("%Y-%m-%d")
     disp["period_end"] = disp["period_end"].dt.strftime("%Y-%m-%d")
-    disp["is_estimated"] = disp["is_estimated"].map({True: "SP估算", False: "实际抄表"})
+    disp["is_estimated"] = disp["is_estimated"].map({True: "估算", False: "实际抄表"})
 
     disp.columns = [
         "月份", "起始日期", "截止日期",
@@ -605,9 +611,9 @@ with tab6:
     elec_months = len(edf)
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("SP账单总支出（15个月）", f"${sp_total:.2f}", delta="水+燃气+垃圾，扣U-Save后")
+    col1.metric("水费+天然气总支出（15个月）", f"${sp_total:.2f}", delta="含垃圾费，扣U-Save后")
     col2.metric("Geneco电费总支出（17个月）", f"${elec_total:.2f}", delta="扣U-Save和返现后")
-    col3.metric("月均综合水电费", f"${(sp_total/sp_months + elec_total/elec_months):.2f}", delta="SP月均+Geneco月均")
+    col3.metric("月均综合水电费", f"${(sp_total/sp_months + elec_total/elec_months):.2f}", delta="水气月均+电费月均")
 
     st.divider()
 
